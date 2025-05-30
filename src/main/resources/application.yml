@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: ai-playground
+  ai:
+    openai:
+      api-key: ${SPRING_AI_OPEN_AI_API_KEY}
+      chat:
+        options:
+          model: 'gpt-4o-mini'
+    chat:
+      client:
+        enabled: true
+#    vectorstore:
+#      pgvector:
+#        initialize-schema: true
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose.yml
+
+app:
+  number-of-highest-rated-films: 3
+
+logging:
+  level:
+    root: DEBUG
+    org:
+      springframework:
+        ai:
+          chat:
+            client:
+              advisor: DEBUG

@@ -1,0 +1,5 @@
+### Actor Highest Rated Films
+GET http://localhost:8080/ai
+Accept: application/json
+
+###
