@@ -4,10 +4,10 @@ services:
     image: pgvector/pgvector:pg15
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=vector_store
-      - PGPASSWORD=postgres
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PWD}
+      - POSTGRES_DB=${DB_NAME}
+      - PGPASSWORD=${PGPASSWORD}
     logging:
       options:
         max-size: 10m

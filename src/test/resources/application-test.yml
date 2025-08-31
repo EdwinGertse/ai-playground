@@ -1,2 +1,6 @@
+spring:
+  ai:
+    openai:
+      api-key: ${SPRING_AI_OPEN_AI_API_KEY}
 app:
   number-of-highest-rated-films: 3
