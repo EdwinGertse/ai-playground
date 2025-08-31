@@ -1,6 +1,6 @@
 package com.tegres.ai.playground.configuration;
 
-import com.tegres.ai.playground.service.ContentSafetyAdvisor;
+import com.tegres.ai.playground.advisors.ContentSafetyAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;

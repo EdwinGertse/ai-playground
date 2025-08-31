@@ -1,4 +1,4 @@
-package com.tegres.ai.playground.service;
+package com.tegres.ai.playground.advisors;
 
 import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
