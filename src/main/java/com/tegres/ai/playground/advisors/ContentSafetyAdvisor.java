@@ -47,11 +47,14 @@ public class ContentSafetyAdvisor implements CallAdvisor, StreamAdvisor {
             .map(this::constructModerationResult)
             .map(ModerationMessage::getText)
             .findFirst();
-        if (moderationResponse.isPresent() && moderationResponse.get().equals(DEFAULT_VIOLATION_MESSAGE)) {
-            return chain.nextCall(request);
-        } else {
-            return this.failureResponse(request, moderationResponse.get());
+        if (moderationResponse.isPresent()) {
+            if (moderationResponse.get().equals(DEFAULT_VIOLATION_MESSAGE)) {
+                return chain.nextCall(request);
+            } else {
+                return this.failureResponse(request, moderationResponse.get());
+            }
         }
+        return chain.nextCall(request);
     }
 
     @Override
@@ -61,11 +64,14 @@ public class ContentSafetyAdvisor implements CallAdvisor, StreamAdvisor {
             .map(this::constructModerationResult)
             .map(ModerationMessage::getText)
             .findFirst();
-        if (moderationResponse.isPresent() && moderationResponse.get().equals(DEFAULT_VIOLATION_MESSAGE)) {
-            return chain.nextStream(request);
-        } else {
-            return Flux.just(this.failureResponse(request, moderationResponse.get()));
+        if (moderationResponse.isPresent()) {
+            if (moderationResponse.get().equals(DEFAULT_VIOLATION_MESSAGE)) {
+                return chain.nextStream(request);
+            } else {
+                return Flux.just(this.failureResponse(request, moderationResponse.get()));
+            }
         }
+        return chain.nextStream(request);
     }
 
     @Override
