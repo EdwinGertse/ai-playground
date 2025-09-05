@@ -15,14 +15,13 @@ import static com.tegres.ai.playground.common.ComponentConstants.APP_CHAT_CLIENT
 public class ChatClientConfiguration {
 
     @Bean(name = APP_CHAT_CLIENT)
-    public ChatClient chatClient(ChatClient.Builder builder,
+    public ChatClient.Builder chatClient(ChatClient.Builder builder,
         ChatMemory chatMemory,
         OpenAiModerationModel moderationModel) {
         return builder
             .defaultAdvisors(
                 ContentSafetyAdvisor.builder(moderationModel).build(),
                 MessageChatMemoryAdvisor.builder(chatMemory).build(),
-                SimpleLoggerAdvisor.builder().build())
-            .build();
+                SimpleLoggerAdvisor.builder().build());
     }
 }
