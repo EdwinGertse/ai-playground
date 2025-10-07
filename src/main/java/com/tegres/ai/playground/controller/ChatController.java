@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.evaluation.RelevancyEvaluator;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.evaluation.EvaluationRequest;
 import org.springframework.ai.evaluation.EvaluationResponse;
@@ -28,7 +29,8 @@ public class ChatController {
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
-    private final ChatClient.Builder chatClient;
+    private final ChatClient chatClient;
+    private final ChatModel chatModel;
 
     @Value("classpath:/prompts/default.st")
     private Resource actorSearchPromptResource;
@@ -36,8 +38,10 @@ public class ChatController {
     @Value("${app.number-of-highest-rated-films:}")
     private int numberOfHighestRatedFilms;
 
-    public ChatController(@Qualifier(APP_CHAT_CLIENT) ChatClient.Builder chatClient) {
+    public ChatController(@Qualifier(APP_CHAT_CLIENT) ChatClient chatClient,
+        ChatModel chatModel) {
         this.chatClient = chatClient;
+        this.chatModel = chatModel;
     }
 
     @GetMapping
@@ -45,16 +49,20 @@ public class ChatController {
         log.info("Request: {}",
             actorSearchPromptResource.getContentAsString(Charset.defaultCharset()));
         PromptTemplate prompt = new PromptTemplate(actorSearchPromptResource);
-        var actorFilmsResponse = this.chatClient.build().prompt(prompt.create(
+        var actorFilmsResponse = this.chatClient
+            .prompt(prompt.create(
                 Map.of("numberOfHighestRatedFilms", numberOfHighestRatedFilms, "actorFullName",
                     "Sandra Bullock")))
             .advisors(advisorSpec -> advisorSpec.param(ChatMemory.DEFAULT_CONVERSATION_ID, "Edwin"))
-            .call().chatResponse();
+            .call()
+            .chatResponse();
 
         EvaluationRequest evaluationRequest = new EvaluationRequest(prompt.getTemplate(),
             actorFilmsResponse.getResult().getOutput().getText());
 
-        RelevancyEvaluator evaluator = new RelevancyEvaluator(chatClient);
+        final RelevancyEvaluator evaluator = RelevancyEvaluator.builder()
+            .chatClientBuilder(ChatClient.builder(chatModel))
+            .build();
 
         EvaluationResponse evaluationResponse = evaluator.evaluate(evaluationRequest);
         if (!evaluationResponse.isPass()) {
