@@ -64,11 +64,11 @@ public class ChatController {
             return ResponseEntity.internalServerError().build();
         }
 
-        EvaluationRequest evaluationRequest = new EvaluationRequest(prompt.getTemplate(),
+        final EvaluationRequest evaluationRequest = new EvaluationRequest(prompt.getTemplate(),
             actorFilmsResponse.getResult().getOutput().getText());
 
-        final RelevancyEvaluator evaluator =
-            RelevancyEvaluator.builder().chatClientBuilder(ChatClient.builder(chatModel)).build();
+        final RelevancyEvaluator evaluator = RelevancyEvaluator.builder()
+            .chatClientBuilder(ChatClient.builder(chatModel)).build();
 
         EvaluationResponse evaluationResponse = evaluator.evaluate(evaluationRequest);
         if (!evaluationResponse.isPass()) {
