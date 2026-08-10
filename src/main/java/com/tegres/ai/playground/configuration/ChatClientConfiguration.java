@@ -53,7 +53,7 @@ public class ChatClientConfiguration {
             .build();
     }
 
-    @ConditionalOnClass(DataSource.class)
+    @ConditionalOnClass(name = "javax.sql.DataSource")
     @Bean(name = APP_CHAT_MEMORY_REPO)
     public ChatMemoryRepository chatMemoryRepository(DataSource dataSource) {
         return JdbcChatMemoryRepository.builder()
@@ -62,7 +62,7 @@ public class ChatClientConfiguration {
             .build();
     }
 
-    @ConditionalOnMissingClass({ "javax.sql.DataSource" })
+    @ConditionalOnMissingClass("javax.sql.DataSource")
     @Bean(name = APP_CHAT_MEMORY_REPO)
     public ChatMemoryRepository inMemoryChatRepository() {
         return new InMemoryChatMemoryRepository();
