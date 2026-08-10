@@ -6,12 +6,15 @@ import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
+import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepositoryDialect;
 import org.springframework.ai.openai.OpenAiModerationModel;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -50,11 +53,18 @@ public class ChatClientConfiguration {
             .build();
     }
 
+    @ConditionalOnClass(DataSource.class)
     @Bean(name = APP_CHAT_MEMORY_REPO)
     public ChatMemoryRepository chatMemoryRepository(DataSource dataSource) {
         return JdbcChatMemoryRepository.builder()
             .dataSource(dataSource)
             .dialect(JdbcChatMemoryRepositoryDialect.from(dataSource))
             .build();
+    }
+
+    @ConditionalOnMissingClass({ "javax.sql.DataSource" })
+    @Bean(name = APP_CHAT_MEMORY_REPO)
+    public ChatMemoryRepository inMemoryChatRepository() {
+        return new InMemoryChatMemoryRepository();
     }
 }
