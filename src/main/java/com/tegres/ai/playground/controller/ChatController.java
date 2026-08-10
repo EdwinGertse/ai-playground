@@ -49,16 +49,18 @@ public class ChatController {
 
     @GetMapping
     public ResponseEntity<ActorFilms> chat() throws IOException {
-        log.info("Request: {}",
-            actorSearchPromptResource.getContentAsString(Charset.defaultCharset()));
+        log.info("Request: {}", actorSearchPromptResource.getContentAsString(Charset.defaultCharset()));
         var converter = new BeanOutputConverter<>(ActorFilms.class);
-        PromptTemplate prompt = PromptTemplate.builder().resource(actorSearchPromptResource)
-            .variables(Map.of("format", converter.getFormat())).build();
+        PromptTemplate prompt = PromptTemplate.builder()
+            .resource(actorSearchPromptResource)
+            .variables(Map.of("format", converter.getFormat()))
+            .build();
         var actorFilmsResponse = this.chatClient.prompt(prompt.create(
                 Map.of("numberOfHighestRatedFilms", numberOfHighestRatedFilms, "actorFullName",
                     "Sandra Bullock")))
-            .advisors(advisorSpec -> advisorSpec.param(ChatMemory.DEFAULT_CONVERSATION_ID, "Edwin"))
-            .call().chatResponse();
+            .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, "Edwin"))
+            .call()
+            .chatResponse();
 
         if (ObjectUtils.isEmpty(actorFilmsResponse)) {
             return ResponseEntity.internalServerError().build();
